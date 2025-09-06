@@ -23,7 +23,16 @@ const AuthLayout = ({ children }: PropsWithChildren) => {
         component={Link}
         href="/"
         disableRipple
-        sx={{ position: 'absolute', top: 24, left: 24 }}
+        sx={{ 
+          position: 'absolute', 
+          top: 24, 
+          left: 24,
+          '&:hover': {
+            '& .MuiTypography-root': {
+              color: '#0077b6',
+            },
+          },
+        }}
       >
         <Image src={LogoImg} alt="logo" height={36} width={36} sx={{ mr: 1 }} />
         <Typography variant="h4" color="text.primary" letterSpacing={1}>

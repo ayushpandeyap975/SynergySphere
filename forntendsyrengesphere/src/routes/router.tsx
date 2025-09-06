@@ -9,8 +9,12 @@ import PageLoader from 'components/loader/PageLoader';
 
 const App = lazy(() => import('App'));
 const Dashboard = lazy(() => import('pages/dashboard'));
+const ProjectsDashboard = lazy(() => import('pages/ProjectsDashboard'));
+const ProjectDashboardDemo = lazy(() => import('components/dashboard/ProjectDashboardDemo'));
 const Signin = lazy(() => import('pages/authentication/Signin'));
 const Signup = lazy(() => import('pages/authentication/Signup'));
+const ForgotPassword = lazy(() => import('pages/authentication/ForgotPassword'));
+const ResetPassword = lazy(() => import('pages/authentication/ResetPassword'));
 
 const router = createBrowserRouter(
   [
@@ -35,6 +39,14 @@ const router = createBrowserRouter(
               index: true,
               element: <Dashboard />,
             },
+            {
+              path: 'projects',
+              element: <ProjectsDashboard />,
+            },
+            {
+              path: 'projects-demo',
+              element: <ProjectDashboardDemo />,
+            },
           ],
         },
         {
@@ -52,6 +64,14 @@ const router = createBrowserRouter(
             {
               path: paths.signup,
               element: <Signup />,
+            },
+            {
+              path: paths.forgotPassword,
+              element: <ForgotPassword />,
+            },
+            {
+              path: paths.resetPassword,
+              element: <ResetPassword />,
             },
           ],
         },

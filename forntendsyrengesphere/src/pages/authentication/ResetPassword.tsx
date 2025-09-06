@@ -1,73 +1,66 @@
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+
 import IconifyIcon from 'components/base/IconifyIcon';
 import paths from 'routes/paths';
 
-interface User {
-  name: string;
-  email: string;
+interface ResetPasswordForm {
   password: string;
   confirmPassword: string;
-  acceptTerms: boolean;
 }
 
 interface FormErrors {
-  name?: string;
-  email?: string;
   password?: string;
   confirmPassword?: string;
-  acceptTerms?: string;
   general?: string;
 }
 
-const Signup = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User>({ 
-    name: '', 
-    email: '', 
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  
+  const [form, setForm] = useState<ResetPasswordForm>({ 
     password: '', 
-    confirmPassword: '', 
-    acceptTerms: false 
+    confirmPassword: '' 
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [tokenValid, setTokenValid] = useState<boolean | null>(null);
 
-  const validateName = (name: string): string | undefined => {
-    if (!name.trim()) {
-      return 'Name is required';
-    }
-    if (name.trim().length < 2) {
-      return 'Name must be at least 2 characters long';
-    }
-    if (name.trim().length > 50) {
-      return 'Name must be less than 50 characters';
-    }
-    return undefined;
-  };
+  useEffect(() => {
+    // Validate token on component mount
+    const validateToken = async () => {
+      if (!token) {
+        setTokenValid(false);
+        return;
+      }
 
-  const validateEmail = (email: string): string | undefined => {
-    if (!email) {
-      return 'Email is required';
-    }
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      return 'Please enter a valid email address';
-    }
-    return undefined;
-  };
+      try {
+        // Simulate token validation API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // For demo purposes, consider token valid if it exists
+        setTokenValid(true);
+      } catch (error) {
+        setTokenValid(false);
+      }
+    };
+
+    validateToken();
+  }, [token]);
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) {
@@ -101,40 +94,23 @@ const Signup = () => {
     return undefined;
   };
 
-  const validateTerms = (acceptTerms: boolean): string | undefined => {
-    if (!acceptTerms) {
-      return 'You must accept the terms and conditions';
-    }
-    return undefined;
-  };
-
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     
-    const nameError = validateName(user.name);
-    if (nameError) newErrors.name = nameError;
-    
-    const emailError = validateEmail(user.email);
-    if (emailError) newErrors.email = emailError;
-    
-    const passwordError = validatePassword(user.password);
+    const passwordError = validatePassword(form.password);
     if (passwordError) newErrors.password = passwordError;
     
-    const confirmPasswordError = validateConfirmPassword(user.confirmPassword, user.password);
+    const confirmPasswordError = validateConfirmPassword(form.confirmPassword, form.password);
     if (confirmPasswordError) newErrors.confirmPassword = confirmPasswordError;
-    
-    const termsError = validateTerms(user.acceptTerms);
-    if (termsError) newErrors.acceptTerms = termsError;
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
+    const { name, value } = e.target;
     
-    setUser({ ...user, [name]: newValue });
+    setForm({ ...form, [name]: value });
     
     // Clear field-specific error when user starts typing
     if (errors[name as keyof FormErrors]) {
@@ -153,53 +129,146 @@ const Signup = () => {
     setErrors({});
 
     try {
-      // Simulate API call
+      // Simulate API call to reset password
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // For demo purposes, simulate success
-      console.log('Signup successful:', user);
+      console.log('Password reset successful');
+      setSuccess(true);
       
-      // Redirect to dashboard after successful signup
-      navigate('/');
+      // Redirect to signin after 3 seconds
+      setTimeout(() => {
+        navigate(paths.signin);
+      }, 3000);
       
     } catch (error) {
-      setErrors({ general: 'Signup failed. Please try again.' });
+      setErrors({ general: 'Failed to reset password. Please try again.' });
     } finally {
       setLoading(false);
     }
   };
 
+  // Loading state while validating token
+  if (tokenValid === null) {
+    return (
+      <Stack spacing={3} alignItems="center">
+        <CircularProgress sx={{ color: '#0077b6' }} />
+        <Typography variant="body2" color="text.secondary">
+          Validating reset link...
+        </Typography>
+      </Stack>
+    );
+  }
+
+  // Invalid or expired token
+  if (tokenValid === false) {
+    return (
+      <>
+        <Typography align="center" variant="h4" color="error">
+          Invalid Reset Link
+        </Typography>
+        <Typography mt={1.5} align="center" variant="body2" color="text.secondary">
+          This password reset link is invalid or has expired. Please request a new one.
+        </Typography>
+
+        <Stack mt={4} spacing={2} alignItems="center">
+          <Button
+            variant="contained"
+            href={paths.forgotPassword}
+            sx={{
+              backgroundColor: '#0077b6',
+              '&:hover': {
+                backgroundColor: '#005a8a',
+              },
+            }}
+          >
+            Request New Reset Link
+          </Button>
+          
+          <Link 
+            href={paths.signin} 
+            sx={{ 
+              color: '#0077b6',
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+            }}
+          >
+            Back to Sign In
+          </Link>
+        </Stack>
+      </>
+    );
+  }
+
+  // Success state
+  if (success) {
+    return (
+      <>
+        <Stack spacing={3} alignItems="center">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              backgroundColor: 'rgba(0, 119, 182, 0.1)',
+              mb: 2,
+            }}
+          >
+            <IconifyIcon 
+              icon="hugeicons:checkmark-circle-02" 
+              sx={{ 
+                fontSize: 48, 
+                color: '#0077b6' 
+              }} 
+            />
+          </Box>
+          
+          <Typography variant="h4" textAlign="center" color="text.primary">
+            Password Reset Successful
+          </Typography>
+          
+          <Typography 
+            variant="body2" 
+            textAlign="center" 
+            color="text.secondary"
+            sx={{ maxWidth: 400, lineHeight: 1.6 }}
+          >
+            Your password has been successfully reset. You will be redirected to the sign in page in a few seconds.
+          </Typography>
+        </Stack>
+
+        <Stack mt={4} alignItems="center">
+          <Link 
+            href={paths.signin} 
+            sx={{ 
+              color: '#0077b6',
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+            }}
+          >
+            Sign In Now
+          </Link>
+        </Stack>
+      </>
+    );
+  }
+
+  // Reset password form
   return (
     <>
       <Typography align="center" variant="h4">
-        Sign Up
+        Reset Password
       </Typography>
       <Typography mt={1.5} align="center" variant="body2">
-        Let's Join us! create account with,
+        Enter your new password below.
       </Typography>
-
-      <Stack mt={3} spacing={1.75} width={1}>
-        <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          startIcon={<IconifyIcon icon="logos:google-icon" />}
-          sx={{ bgcolor: 'info.main', '&:hover': { bgcolor: 'info.main' } }}
-        >
-          Google
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          startIcon={<IconifyIcon icon="logos:apple" sx={{ mb: 0.5 }} />}
-          sx={{ bgcolor: 'info.main', '&:hover': { bgcolor: 'info.main' } }}
-        >
-          Apple
-        </Button>
-      </Stack>
-
-      <Divider sx={{ my: 4 }}>or Signup with</Divider>
 
       <Stack component="form" mt={3} onSubmit={handleSubmit} direction="column" gap={2}>
         {errors.general && (
@@ -220,85 +289,16 @@ const Signup = () => {
         )}
         
         <TextField
-          id="name"
-          name="name"
-          type="text"
-          value={user.name}
-          onChange={handleInputChange}
-          variant="filled"
-          placeholder="Your Name"
-          autoComplete="name"
-          fullWidth
-          autoFocus
-          required
-
-          error={!!errors.name}
-          helperText={errors.name}
-          disabled={loading}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconifyIcon icon="hugeicons:user-circle-02" />
-              </InputAdornment>
-            ),
-          }}
-
-          sx={{
-            '& .MuiFilledInput-root': {
-              '&.Mui-focused': {
-                backgroundColor: 'rgba(0, 119, 182, 0.04)',
-              },
-              '&.Mui-focused .MuiFilledInput-underline:after': {
-                borderBottomColor: '#0077b6',
-              },
-            },
-          }}
-        />
-        <TextField
-          id="email"
-          name="email"
-          type="email"
-          value={user.email}
-          onChange={handleInputChange}
-          variant="filled"
-          placeholder="Your Email"
-          autoComplete="email"
-          fullWidth
-          required
-
-          error={!!errors.email}
-          helperText={errors.email}
-          disabled={loading}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconifyIcon icon="hugeicons:mail-at-sign-02" />
-              </InputAdornment>
-            ),
-          }}
-
-          sx={{
-            '& .MuiFilledInput-root': {
-              '&.Mui-focused': {
-                backgroundColor: 'rgba(0, 119, 182, 0.04)',
-              },
-              '&.Mui-focused .MuiFilledInput-underline:after': {
-                borderBottomColor: '#0077b6',
-              },
-            },
-          }}
-        />
-        <TextField
           id="password"
           name="password"
           type={showPassword ? 'text' : 'password'}
-          value={user.password}
+          value={form.password}
           onChange={handleInputChange}
           variant="filled"
-          placeholder="Your Password"
-
+          placeholder="New Password"
           autoComplete="new-password"
           fullWidth
+          autoFocus
           required
           error={!!errors.password}
           helperText={errors.password}
@@ -313,8 +313,8 @@ const Signup = () => {
               <InputAdornment
                 position="end"
                 sx={{
-                  opacity: user.password ? 1 : 0,
-                  pointerEvents: user.password ? 'auto' : 'none',
+                  opacity: form.password ? 1 : 0,
+                  pointerEvents: form.password ? 'auto' : 'none',
                 }}
               >
                 <IconButton
@@ -322,7 +322,6 @@ const Signup = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   sx={{ border: 'none', bgcolor: 'transparent !important' }}
                   edge="end"
-
                   disabled={loading}
                 >
                   <IconifyIcon
@@ -333,7 +332,6 @@ const Signup = () => {
               </InputAdornment>
             ),
           }}
-
           sx={{
             '& .MuiFilledInput-root': {
               '&.Mui-focused': {
@@ -345,14 +343,15 @@ const Signup = () => {
             },
           }}
         />
+        
         <TextField
           id="confirmPassword"
           name="confirmPassword"
           type={showConfirmPassword ? 'text' : 'password'}
-          value={user.confirmPassword}
+          value={form.confirmPassword}
           onChange={handleInputChange}
           variant="filled"
-          placeholder="Confirm Password"
+          placeholder="Confirm New Password"
           autoComplete="new-password"
           fullWidth
           required
@@ -369,8 +368,8 @@ const Signup = () => {
               <InputAdornment
                 position="end"
                 sx={{
-                  opacity: user.confirmPassword ? 1 : 0,
-                  pointerEvents: user.confirmPassword ? 'auto' : 'none',
+                  opacity: form.confirmPassword ? 1 : 0,
+                  pointerEvents: form.confirmPassword ? 'auto' : 'none',
                 }}
               >
                 <IconButton
@@ -400,57 +399,13 @@ const Signup = () => {
           }}
         />
 
-        <Stack mt={1} alignItems="flex-start">
-          <FormControlLabel
-            control={
-              <Checkbox 
-                id="acceptTerms" 
-                name="acceptTerms" 
-                size="small"
-                checked={user.acceptTerms}
-                onChange={handleInputChange}
-                disabled={loading}
-                sx={{
-                  color: 'neutral.main',
-                  '&.Mui-checked': {
-                    color: '#0077b6',
-                  },
-                }}
-              />
-            }
-            label={
-              <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
-                I accept the{' '}
-                <Link href="#" sx={{ color: '#0077b6', textDecoration: 'underline' }}>
-                  Terms and Conditions
-                </Link>{' '}
-                and{' '}
-                <Link href="#" sx={{ color: '#0077b6', textDecoration: 'underline' }}>
-                  Privacy Policy
-                </Link>
-              </Typography>
-            }
-            sx={{ ml: -1, alignItems: 'flex-start' }}
-          />
-          {errors.acceptTerms && (
-            <Typography 
-              variant="caption" 
-              color="error" 
-              sx={{ ml: 1, mt: 0.5 }}
-            >
-              {errors.acceptTerms}
-            </Typography>
-          )}
-        </Stack>
-
         <Button 
           type="submit" 
           variant="contained" 
           size="medium" 
           fullWidth
           disabled={loading}
-          sx={{ 
-            mt: 1.5,
+          sx={{
             backgroundColor: '#0077b6',
             '&:hover': {
               backgroundColor: '#005a8a',
@@ -472,19 +427,19 @@ const Signup = () => {
                   marginLeft: '-10px',
                 }} 
               />
-              <span style={{ opacity: 0 }}>Sign Up</span>
+              <span style={{ opacity: 0 }}>Reset Password</span>
             </>
           ) : (
-            'Sign Up'
+            'Reset Password'
           )}
         </Button>
       </Stack>
 
       <Typography mt={5} variant="body2" color="text.secondary" align="center" letterSpacing={0.25}>
-        Already have an account? <Link href={paths.signin} sx={{ color: '#0077b6' }}>Signin</Link>
+        Remember your password? <Link href={paths.signin} sx={{ color: '#0077b6' }}>Sign In</Link>
       </Typography>
     </>
   );
 };
 
-export default Signup;
+export default ResetPassword;
