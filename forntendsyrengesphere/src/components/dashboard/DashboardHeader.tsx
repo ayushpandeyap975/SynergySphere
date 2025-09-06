@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
@@ -9,7 +10,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import IconifyIcon from 'components/base/IconifyIcon';
+import LogoutConfirmDialog from 'components/dialogs/LogoutConfirmDialog';
+import { authService } from 'services';
 import { Avatar3 } from 'data/images';
+import paths from 'routes/paths';
 
 interface DashboardHeaderProps {
   userName?: string;
@@ -20,14 +24,22 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader = ({
-  userName = 'Alex Stanton',
-  userEmail = 'alex@example.com',
-  userAvatar = Avatar3,
+  userName,
+  userEmail,
+  userAvatar,
   onProfileClick,
   onLogoutClick,
 }: DashboardHeaderProps) => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const open = Boolean(anchorEl);
+
+  // Get current user data from auth service
+  const currentUser = authService.getUserData();
+  const displayName = userName || currentUser?.name || 'Alex Stanton';
+  const displayEmail = userEmail || currentUser?.email || 'alex@example.com';
+  const displayAvatar = userAvatar || currentUser?.avatar || Avatar3;
 
   const handleUserMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -44,7 +56,29 @@ const DashboardHeader = ({
 
   const handleLogoutClick = () => {
     handleUserMenuClose();
-    onLogoutClick?.();
+    if (onLogoutClick) {
+      onLogoutClick();
+    } else {
+      setLogoutDialogOpen(true);
+    }
+  };
+
+  const handleLogoutConfirm = async () => {
+    try {
+      await authService.logout();
+      // Redirect to login page after successful logout
+      navigate(paths.signin, { replace: true });
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Still redirect to login even if logout API fails
+      navigate(paths.signin, { replace: true });
+    } finally {
+      setLogoutDialogOpen(false);
+    }
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutDialogOpen(false);
   };
 
   return (
@@ -88,7 +122,7 @@ const DashboardHeader = ({
           sx={{ display: { xs: 'none', sm: 'flex' } }}
         >
           <Typography variant="body2" color="text.primary" fontWeight={500}>
-            {userName}
+            {displayName}
           </Typography>
         </Stack>
         
@@ -97,7 +131,7 @@ const DashboardHeader = ({
           aria-controls={open ? 'user-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
           aria-haspopup="true"
-          aria-label={`User menu for ${userName}`}
+          aria-label={`User menu for ${displayName}`}
           disableRipple
           sx={{
             borderRadius: '50%',
@@ -109,8 +143,8 @@ const DashboardHeader = ({
           }}
         >
           <Avatar
-            src={userAvatar}
-            alt={`${userName} avatar`}
+            src={displayAvatar}
+            alt={`${displayName} avatar`}
             sx={{
               height: 40,
               width: 40,
@@ -149,16 +183,16 @@ const DashboardHeader = ({
               tabIndex={-1}
             >
               <Avatar 
-                src={userAvatar} 
-                alt={`${userName} avatar`}
+                src={displayAvatar} 
+                alt={`${displayName} avatar`}
                 sx={{ mr: 1.5, height: 36, width: 36 }} 
               />
               <Stack direction="column">
                 <Typography variant="body2" color="text.primary" fontWeight={600}>
-                  {userName}
+                  {displayName}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" fontWeight={400}>
-                  {userEmail}
+                  {displayEmail}
                 </Typography>
               </Stack>
             </MenuItem>
@@ -198,6 +232,13 @@ const DashboardHeader = ({
           </Box>
         </Menu>
       </Stack>
+
+      <LogoutConfirmDialog
+        open={logoutDialogOpen}
+        onClose={handleLogoutCancel}
+        onConfirm={handleLogoutConfirm}
+        userName={displayName}
+      />
     </Stack>
   );
 };

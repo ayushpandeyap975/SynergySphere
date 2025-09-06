@@ -231,7 +231,6 @@ const Signup = () => {
           fullWidth
           autoFocus
           required
-
           error={!!errors.name}
           helperText={errors.name}
           disabled={loading}
@@ -242,7 +241,6 @@ const Signup = () => {
               </InputAdornment>
             ),
           }}
-
           sx={{
             '& .MuiFilledInput-root': {
               '&.Mui-focused': {
@@ -265,7 +263,6 @@ const Signup = () => {
           autoComplete="email"
           fullWidth
           required
-
           error={!!errors.email}
           helperText={errors.email}
           disabled={loading}
@@ -276,7 +273,6 @@ const Signup = () => {
               </InputAdornment>
             ),
           }}
-
           sx={{
             '& .MuiFilledInput-root': {
               '&.Mui-focused': {
@@ -296,7 +292,6 @@ const Signup = () => {
           onChange={handleInputChange}
           variant="filled"
           placeholder="Your Password"
-
           autoComplete="new-password"
           fullWidth
           required
@@ -322,7 +317,6 @@ const Signup = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   sx={{ border: 'none', bgcolor: 'transparent !important' }}
                   edge="end"
-
                   disabled={loading}
                 >
                   <IconifyIcon
@@ -333,7 +327,6 @@ const Signup = () => {
               </InputAdornment>
             ),
           }}
-
           sx={{
             '& .MuiFilledInput-root': {
               '&.Mui-focused': {
