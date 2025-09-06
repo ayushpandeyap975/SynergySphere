@@ -1,5 +1,7 @@
-# tasks/views.py
-from django.http import HttpResponse
+from rest_framework import viewsets
+from .models import Task
+from .serializers import TaskSerializer
 
-def index(request):
-    return HttpResponse("Hello from Tasks app!")
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
