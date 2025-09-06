@@ -203,9 +203,8 @@ const ProjectsDashboard: React.FC = () => {
   };
 
   const handleLogoutClick = () => {
-    // Handle logout logic
-    setSnackbarMessage('Logout functionality would be implemented here');
-    setSnackbarOpen(true);
+    // Logout is now handled by DashboardHeader component
+    console.log('Logout clicked - handled by DashboardHeader');
   };
 
   const handleSnackbarClose = () => {

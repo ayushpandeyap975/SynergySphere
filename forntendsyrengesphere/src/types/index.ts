@@ -15,6 +15,15 @@ export type {
   ProjectProgress,
 } from './project';
 
+// User-related types
+export type {
+  User,
+  UserProfile,
+  UserPreferences,
+  UpdateUserProfileData,
+  UpdateUserProfileResponse,
+} from './user';
+
 // Error-related types
 export type {
   ErrorType,

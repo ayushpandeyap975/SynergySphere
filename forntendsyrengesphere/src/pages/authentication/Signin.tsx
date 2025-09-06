@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -11,6 +12,7 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconifyIcon from 'components/base/IconifyIcon';
+import { authService } from 'services';
 import paths from 'routes/paths';
 
 interface User {
@@ -26,6 +28,7 @@ interface FormErrors {
 }
 
 const Signin = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User>({ email: '', password: '', rememberMe: false });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -88,17 +91,21 @@ const Signin = () => {
     setErrors({});
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // For demo purposes, simulate success
-      console.log('Login successful:', user);
-      
-      // In a real app, you would handle successful login here
-      // e.g., redirect to dashboard, store auth token, etc.
-      
-    } catch (error) {
-      setErrors({ general: 'Login failed. Please check your credentials and try again.' });
+      const response = await authService.login({
+        email: user.email,
+        password: user.password,
+        rememberMe: user.rememberMe,
+      });
+
+      if (response.success) {
+        console.log('Login successful:', response.user);
+        // Redirect to dashboard after successful login
+        navigate('/', { replace: true });
+      } else {
+        setErrors({ general: response.message || 'Login failed. Please try again.' });
+      }
+    } catch (error: any) {
+      setErrors({ general: error.message || 'Login failed. Please check your credentials and try again.' });
     } finally {
       setLoading(false);
     }

@@ -19,6 +19,8 @@ import {
   deleteProjectMock,
 } from './mockData';
 
+import authService from './auth';
+
 // Environment configuration
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
   import.meta.env.MODE === 'development';
@@ -72,6 +74,9 @@ export {
   getMockProjects,
   resetMockData,
 } from './mockData';
+
+// Export authentication service
+export { authService };
 
 // Export the main service as default
 export default projectService;
