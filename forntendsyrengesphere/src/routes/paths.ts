@@ -11,11 +11,11 @@ export default {
   mentors: `/${rootPaths.pageRoot}/mentors`,
   messages: `/${rootPaths.pageRoot}/messages`,
   settings: `/${rootPaths.pageRoot}/settings`,
+  profile: `/profile`,
 
   signin: `/${rootPaths.authRoot}/signin`,
   signup: `/${rootPaths.authRoot}/signup`,
   forgotPassword: `/${rootPaths.authRoot}/forgot-password`,
   resetPassword: `/${rootPaths.authRoot}/reset-password`,
-
   404: `/${rootPaths.errorRoot}/404`,
 };

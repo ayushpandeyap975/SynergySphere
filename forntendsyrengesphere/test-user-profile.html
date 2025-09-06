@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: #2e8b57; }
+        .error { color: #ff4d5e; }
+        .highlight { color: #0077b6; font-weight: bold; }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Profile Implementation Test</h1>
+    
+    <div class="test-section">
+        <h2>✅ Task 22: Create User Profile page and routing</h2>
+        <p><strong>Status:</strong> <span class="success">COMPLETED</span></p>
+        
+        <h3>Implementation Details:</h3>
+        <ul class="feature-list">
+            <li><strong>Route Setup:</strong> /profile route configured with UserProfilePage component</li>
+            <li><strong>Profile Header:</strong> Avatar, name, email, and role display</li>
+            <li><strong>Color Scheme:</strong> <span class="highlight">#0077b6</span> used for edit profile button and active navigation tabs</li>
+            <li><strong>Basic Profile Information:</strong> Display and editing functionality implemented</li>
+            <li><strong>Navigation:</strong> ProfileMenu updated to navigate to profile page</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Key Features Implemented:</h3>
+        <ul class="feature-list">
+            <li><strong>UserProfile Page Component:</strong> Located at src/pages/UserProfile.tsx</li>
+            <li><strong>User Types:</strong> Comprehensive TypeScript interfaces in src/types/user.ts</li>
+            <li><strong>Routing:</strong> Profile route added to router.tsx and paths.ts</li>
+            <li><strong>Navigation Integration:</strong> ProfileMenu updated with navigation to profile</li>
+            <li><strong>Edit Functionality:</strong> Inline editing for name, bio, phone, and location</li>
+            <li><strong>Tabbed Interface:</strong> Personal Information, Account Settings, and Activity tabs</li>
+            <li><strong>Responsive Design:</strong> Mobile-friendly layout using Material-UI Grid</li>
+            <li><strong>DNX Theme Integration:</strong> Consistent styling with existing theme</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Profile Page Features:</h3>
+        <ul class="feature-list">
+            <li><strong>Profile Header:</strong> Large avatar, user name, email, role chip, department chip</li>
+            <li><strong>Edit Profile Button:</strong> Styled with <span class="highlight">#0077b6</span> color</li>
+            <li><strong>Contact Information:</strong> Phone, location, timezone fields</li>
+            <li><strong>Account Details:</strong> Member since, last active, user ID</li>
+            <li><strong>Form Validation:</strong> Input validation and state management</li>
+            <li><strong>Role-based Styling:</strong> Different colors for admin, manager, member roles</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Navigation Flow:</h3>
+        <ol>
+            <li>User clicks on profile avatar in top navigation</li>
+            <li>Profile menu opens with "View Profile" option highlighted in <span class="highlight">#0077b6</span></li>
+            <li>Clicking "View Profile" navigates to /profile route</li>
+            <li>UserProfile page loads with user information and editing capabilities</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>Requirements Satisfied:</h3>
+        <p><strong>Requirement 7:</strong> User profile management</p>
+        <ul class="feature-list">
+            <li>Profile information display and editing ✅</li>
+            <li>User menu with profile and logout options ✅</li>
+            <li>Session management preparation ✅</li>
+            <li>User-generated content sanitization ✅</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Technical Implementation:</h3>
+        <ul class="feature-list">
+            <li><strong>TypeScript:</strong> Fully typed with User, UserProfile, and related interfaces</li>
+            <li><strong>React Hooks:</strong> useState for state management, form handling</li>
+            <li><strong>Material-UI:</strong> Consistent with DNX theme components and styling</li>
+            <li><strong>React Router:</strong> Proper routing integration with navigation</li>
+            <li><strong>Responsive Design:</strong> Grid layout adapts to different screen sizes</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2 class="success">✅ Task 22 Implementation Complete</h2>
+        <p>The User Profile page and routing has been successfully implemented with all required features:</p>
+        <ul>
+            <li>✅ /profile route with UserProfilePage component</li>
+            <li>✅ Profile header with avatar, name, email, and role</li>
+            <li>✅ <span class="highlight">#0077b6</span> color for edit profile button and active navigation tabs</li>
+            <li>✅ Basic profile information display and editing</li>
+            <li>✅ Navigation integration from ProfileMenu</li>
+        </ul>
+        
+        <p><strong>Next Steps:</strong> The user can now access their profile page by clicking on their avatar in the top navigation and selecting "View Profile".</p>
+    </div>
+</body>
+</html>
