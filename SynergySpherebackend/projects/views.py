@@ -1,4 +1,7 @@
-from django.http import JsonResponse
+from rest_framework import viewsets
+from .models import Project
+from .serializers import ProjectSerializer
 
-def index(request):
-    return JsonResponse({"message": "Hello from Projects API"})
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
